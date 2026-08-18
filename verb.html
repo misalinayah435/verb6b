@@ -1,0 +1,682 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Minimalist Verb Dictionary | Regular & Irregular</title>
+    
+    <!-- Google Fonts: Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    
+    <!-- Tailwind CSS (CDN) -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-gray-50 text-gray-800 antialiased min-h-screen p-4 sm:p-8">
+
+    <div class="max-w-6xl mx-auto">
+        <!-- Header Section -->
+        <header class="text-center mb-10 mt-6">
+            <h1 class="text-3xl sm:text-4xl font-semibold text-gray-900 tracking-tight mb-3">
+                English Verb Dictionary
+            </h1>
+            <p class="text-gray-500 text-sm sm:text-base max-w-2xl mx-auto">
+                Koleksi 300+ kata kerja beserta bentuk V1, V2, V3, dan artinya. <br class="hidden sm:block">
+                Mendukung pencarian kata Inggris, Indonesia, maupun tipe (ketik <strong>"Regular"</strong> atau <strong>"Irregular"</strong>).
+            </p>
+        </header>
+
+        <!-- Search Bar Section -->
+        <div class="relative max-w-3xl mx-auto mb-8 shadow-sm rounded-2xl bg-white">
+            <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                <!-- Search Icon -->
+                <svg class="h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                </svg>
+            </div>
+            <input 
+                type="text" 
+                id="searchInput" 
+                class="block w-full pl-12 pr-4 py-4 border-0 rounded-2xl text-gray-900 ring-1 ring-inset ring-gray-200 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-blue-600 sm:text-base sm:leading-6 transition-all duration-200 bg-transparent outline-none" 
+                placeholder="Cari kata (contoh: go, pergi, ate, irregular)..."
+            >
+        </div>
+
+        <!-- Table Section -->
+        <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+            <div class="overflow-x-auto">
+                <table class="w-full text-left border-collapse min-w-[700px]">
+                    <thead>
+                        <tr class="bg-gray-50/80 border-b border-gray-100">
+                            <th scope="col" class="py-4 px-6 text-xs font-semibold text-gray-500 uppercase tracking-wider w-1/4">V1 (Base) & Tipe</th>
+                            <th scope="col" class="py-4 px-6 text-xs font-semibold text-gray-500 uppercase tracking-wider w-1/4">V2 (Past)</th>
+                            <th scope="col" class="py-4 px-6 text-xs font-semibold text-gray-500 uppercase tracking-wider w-1/4">V3 (Participle)</th>
+                            <th scope="col" class="py-4 px-6 text-xs font-semibold text-gray-500 uppercase tracking-wider w-1/4">Arti (Indonesia)</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tableBody" class="divide-y divide-gray-100">
+                        <!-- Data akan di-render oleh JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+            
+            <!-- Empty State -->
+            <div id="emptyState" class="hidden py-12 text-center">
+                <svg class="mx-auto h-12 w-12 text-gray-300 mb-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                <h3 class="text-sm font-medium text-gray-900">Pencarian tidak ditemukan</h3>
+                <p class="mt-1 text-sm text-gray-500">Coba cari dengan kata kunci yang berbeda.</p>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="text-center mt-10 mb-8 text-sm text-gray-400">
+            Total kosakata ditampilkan: <span id="wordCount" class="font-semibold text-blue-600 bg-blue-50 px-2 py-1 rounded-md">0</span>
+        </div>
+    </div>
+
+    <script>
+        // Database 300+ Verb A-Z Lengkap (Regular & Irregular)
+        const verbsList = [
+            // A
+            { v1: "absorb", v2: "absorbed", v3: "absorbed", arti: "menyerap", type: "Regular" },
+            { v1: "accept", v2: "accepted", v3: "accepted", arti: "menerima", type: "Regular" },
+            { v1: "ache", v2: "ached", v3: "ached", arti: "sakit / nyeri", type: "Regular" },
+            { v1: "achieve", v2: "achieved", v3: "achieved", arti: "mencapai", type: "Regular" },
+            { v1: "act", v2: "acted", v3: "acted", arti: "bertindak / berakting", type: "Regular" },
+            { v1: "add", v2: "added", v3: "added", arti: "menambahkan", type: "Regular" },
+            { v1: "admire", v2: "admired", v3: "admired", arti: "mengagumi", type: "Regular" },
+            { v1: "admit", v2: "admitted", v3: "admitted", arti: "mengakui", type: "Regular" },
+            { v1: "advise", v2: "advised", v3: "advised", arti: "menasihati", type: "Regular" },
+            { v1: "agree", v2: "agreed", v3: "agreed", arti: "setuju", type: "Regular" },
+            { v1: "allow", v2: "allowed", v3: "allowed", arti: "mengizinkan", type: "Regular" },
+            { v1: "announce", v2: "announced", v3: "announced", arti: "mengumumkan", type: "Regular" },
+            { v1: "answer", v2: "answered", v3: "answered", arti: "menjawab", type: "Regular" },
+            { v1: "apologize", v2: "apologized", v3: "apologized", arti: "meminta maaf", type: "Regular" },
+            { v1: "appear", v2: "appeared", v3: "appeared", arti: "muncul / tampak", type: "Regular" },
+            { v1: "apply", v2: "applied", v3: "applied", arti: "menerapkan / melamar", type: "Regular" },
+            { v1: "approach", v2: "approached", v3: "approached", arti: "mendekati", type: "Regular" },
+            { v1: "argue", v2: "argued", v3: "argued", arti: "berdebat", type: "Regular" },
+            { v1: "arise", v2: "arose", v3: "arisen", arti: "timbul / muncul", type: "Irregular" },
+            { v1: "arrange", v2: "arranged", v3: "arranged", arti: "mengatur", type: "Regular" },
+            { v1: "arrive", v2: "arrived", v3: "arrived", arti: "tiba", type: "Regular" },
+            { v1: "ask", v2: "asked", v3: "asked", arti: "meminta / bertanya", type: "Regular" },
+            { v1: "assume", v2: "assumed", v3: "assumed", arti: "mengasumsikan", type: "Regular" },
+            { v1: "attack", v2: "attacked", v3: "attacked", arti: "menyerang", type: "Regular" },
+            { v1: "attempt", v2: "attempted", v3: "attempted", arti: "mencoba (usaha)", type: "Regular" },
+            { v1: "attend", v2: "attended", v3: "attended", arti: "menghadiri", type: "Regular" },
+            { v1: "attract", v2: "attracted", v3: "attracted", arti: "menarik (perhatian)", type: "Regular" },
+            { v1: "avoid", v2: "avoided", v3: "avoided", arti: "menghindari", type: "Regular" },
+            { v1: "awake", v2: "awoke", v3: "awoken", arti: "bangun / menyadarkan", type: "Irregular" },
+            
+            // B
+            { v1: "bake", v2: "baked", v3: "baked", arti: "memanggang", type: "Regular" },
+            { v1: "be (am, is, are)", v2: "was / were", v3: "been", arti: "adalah / berada", type: "Irregular" },
+            { v1: "bear", v2: "bore", v3: "borne/born", arti: "menanggung / melahirkan", type: "Irregular" },
+            { v1: "beat", v2: "beat", v3: "beaten", arti: "memukul / mengalahkan", type: "Irregular" },
+            { v1: "become", v2: "became", v3: "become", arti: "menjadi", type: "Irregular" },
+            { v1: "beg", v2: "begged", v3: "begged", arti: "mengemis / memohon", type: "Regular" },
+            { v1: "begin", v2: "began", v3: "begun", arti: "mulai", type: "Irregular" },
+            { v1: "behave", v2: "behaved", v3: "behaved", arti: "berkelakuan", type: "Regular" },
+            { v1: "believe", v2: "believed", v3: "believed", arti: "percaya", type: "Regular" },
+            { v1: "belong", v2: "belonged", v3: "belonged", arti: "termasuk / milik", type: "Regular" },
+            { v1: "bend", v2: "bent", v3: "bent", arti: "membengkokkan", type: "Irregular" },
+            { v1: "bet", v2: "bet", v3: "bet", arti: "bertaruh", type: "Irregular" },
+            { v1: "bind", v2: "bound", v3: "bound", arti: "mengikat", type: "Irregular" },
+            { v1: "bite", v2: "bit", v3: "bitten", arti: "menggigit", type: "Irregular" },
+            { v1: "bleed", v2: "bled", v3: "bled", arti: "berdarah", type: "Irregular" },
+            { v1: "bless", v2: "blessed", v3: "blessed", arti: "memberkati", type: "Regular" },
+            { v1: "blow", v2: "blew", v3: "blown", arti: "meniup", type: "Irregular" },
+            { v1: "boil", v2: "boiled", v3: "boiled", arti: "mendidih / merebus", type: "Regular" },
+            { v1: "borrow", v2: "borrowed", v3: "borrowed", arti: "meminjam", type: "Regular" },
+            { v1: "break", v2: "broke", v3: "broken", arti: "memecahkan / mematahkan", type: "Irregular" },
+            { v1: "breathe", v2: "breathed", v3: "breathed", arti: "bernapas", type: "Regular" },
+            { v1: "bring", v2: "brought", v3: "brought", arti: "membawa", type: "Irregular" },
+            { v1: "broadcast", v2: "broadcast", v3: "broadcast", arti: "menyiarkan", type: "Irregular" },
+            { v1: "build", v2: "built", v3: "built", arti: "membangun", type: "Irregular" },
+            { v1: "burn", v2: "burnt / burned", v3: "burnt / burned", arti: "membakar", type: "Irregular" },
+            { v1: "burst", v2: "burst", v3: "burst", arti: "meledak", type: "Irregular" },
+            { v1: "buy", v2: "bought", v3: "bought", arti: "membeli", type: "Irregular" },
+
+            // C
+            { v1: "calculate", v2: "calculated", v3: "calculated", arti: "menghitung", type: "Regular" },
+            { v1: "call", v2: "called", v3: "called", arti: "memanggil / menelpon", type: "Regular" },
+            { v1: "camp", v2: "camped", v3: "camped", arti: "berkemah", type: "Regular" },
+            { v1: "care", v2: "cared", v3: "cared", arti: "peduli", type: "Regular" },
+            { v1: "carry", v2: "carried", v3: "carried", arti: "membawa (mengangkat)", type: "Regular" },
+            { v1: "catch", v2: "caught", v3: "caught", arti: "menangkap", type: "Irregular" },
+            { v1: "cause", v2: "caused", v3: "caused", arti: "menyebabkan", type: "Regular" },
+            { v1: "challenge", v2: "challenged", v3: "challenged", arti: "menantang", type: "Regular" },
+            { v1: "change", v2: "changed", v3: "changed", arti: "mengubah", type: "Regular" },
+            { v1: "chase", v2: "chased", v3: "chased", arti: "mengejar", type: "Regular" },
+            { v1: "cheat", v2: "cheated", v3: "cheated", arti: "mencontek / menipu", type: "Regular" },
+            { v1: "check", v2: "checked", v3: "checked", arti: "memeriksa", type: "Regular" },
+            { v1: "cheer", v2: "cheered", v3: "cheered", arti: "bersorak", type: "Regular" },
+            { v1: "chew", v2: "chewed", v3: "chewed", arti: "mengunyah", type: "Regular" },
+            { v1: "choose", v2: "chose", v3: "chosen", arti: "memilih", type: "Irregular" },
+            { v1: "claim", v2: "claimed", v3: "claimed", arti: "mengklaim", type: "Regular" },
+            { v1: "clean", v2: "cleaned", v3: "cleaned", arti: "membersihkan", type: "Regular" },
+            { v1: "climb", v2: "climbed", v3: "climbed", arti: "memanjat", type: "Regular" },
+            { v1: "close", v2: "closed", v3: "closed", arti: "menutup", type: "Regular" },
+            { v1: "collect", v2: "collected", v3: "collected", arti: "mengumpulkan", type: "Regular" },
+            { v1: "come", v2: "came", v3: "come", arti: "datang", type: "Irregular" },
+            { v1: "compare", v2: "compared", v3: "compared", arti: "membandingkan", type: "Regular" },
+            { v1: "complain", v2: "complained", v3: "complained", arti: "mengeluh", type: "Regular" },
+            { v1: "complete", v2: "completed", v3: "completed", arti: "menyelesaikan / melengkapi", type: "Regular" },
+            { v1: "connect", v2: "connected", v3: "connected", arti: "menghubungkan", type: "Regular" },
+            { v1: "consider", v2: "considered", v3: "considered", arti: "mempertimbangkan", type: "Regular" },
+            { v1: "continue", v2: "continued", v3: "continued", arti: "melanjutkan", type: "Regular" },
+            { v1: "cook", v2: "cooked", v3: "cooked", arti: "memasak", type: "Regular" },
+            { v1: "copy", v2: "copied", v3: "copied", arti: "menyalin", type: "Regular" },
+            { v1: "cost", v2: "cost", v3: "cost", arti: "berharga / memakan biaya", type: "Irregular" },
+            { v1: "cough", v2: "coughed", v3: "coughed", arti: "batuk", type: "Regular" },
+            { v1: "count", v2: "counted", v3: "counted", arti: "menghitung", type: "Regular" },
+            { v1: "crawl", v2: "crawled", v3: "crawled", arti: "merangkak", type: "Regular" },
+            { v1: "cross", v2: "crossed", v3: "crossed", arti: "menyeberang", type: "Regular" },
+            { v1: "cry", v2: "cried", v3: "cried", arti: "menangis", type: "Regular" },
+            { v1: "cut", v2: "cut", v3: "cut", arti: "memotong", type: "Irregular" },
+
+            // D
+            { v1: "damage", v2: "damaged", v3: "damaged", arti: "merusak", type: "Regular" },
+            { v1: "dance", v2: "danced", v3: "danced", arti: "menari", type: "Regular" },
+            { v1: "deal", v2: "dealt", v3: "dealt", arti: "berurusan / membagikan", type: "Irregular" },
+            { v1: "decide", v2: "decided", v3: "decided", arti: "memutuskan", type: "Regular" },
+            { v1: "delay", v2: "delayed", v3: "delayed", arti: "menunda", type: "Regular" },
+            { v1: "deliver", v2: "delivered", v3: "delivered", arti: "mengirimkan", type: "Regular" },
+            { v1: "depend", v2: "depended", v3: "depended", arti: "bergantung pada", type: "Regular" },
+            { v1: "describe", v2: "described", v3: "described", arti: "menggambarkan", type: "Regular" },
+            { v1: "destroy", v2: "destroyed", v3: "destroyed", arti: "menghancurkan", type: "Regular" },
+            { v1: "develop", v2: "developed", v3: "developed", arti: "mengembangkan", type: "Regular" },
+            { v1: "dig", v2: "dug", v3: "dug", arti: "menggali", type: "Irregular" },
+            { v1: "disagree", v2: "disagreed", v3: "disagreed", arti: "tidak setuju", type: "Regular" },
+            { v1: "disappear", v2: "disappeared", v3: "disappeared", arti: "menghilang", type: "Regular" },
+            { v1: "discover", v2: "discovered", v3: "discovered", arti: "menemukan (hal baru)", type: "Regular" },
+            { v1: "discuss", v2: "discussed", v3: "discussed", arti: "berdiskusi", type: "Regular" },
+            { v1: "divide", v2: "divided", v3: "divided", arti: "membagi", type: "Regular" },
+            { v1: "do", v2: "did", v3: "done", arti: "melakukan", type: "Irregular" },
+            { v1: "doubt", v2: "doubted", v3: "doubted", arti: "meragukan", type: "Regular" },
+            { v1: "drag", v2: "dragged", v3: "dragged", arti: "menyeret", type: "Regular" },
+            { v1: "draw", v2: "drew", v3: "drawn", arti: "menggambar / menarik", type: "Irregular" },
+            { v1: "dream", v2: "dreamt / dreamed", v3: "dreamt / dreamed", arti: "bermimpi", type: "Irregular" },
+            { v1: "dress", v2: "dressed", v3: "dressed", arti: "berpakaian", type: "Regular" },
+            { v1: "drink", v2: "drank", v3: "drunk", arti: "minum", type: "Irregular" },
+            { v1: "drive", v2: "drove", v3: "driven", arti: "menyopir / mengemudi", type: "Irregular" },
+            { v1: "drop", v2: "dropped", v3: "dropped", arti: "menjatuhkan", type: "Regular" },
+            { v1: "dry", v2: "dried", v3: "dried", arti: "mengeringkan", type: "Regular" },
+
+            // E
+            { v1: "earn", v2: "earned", v3: "earned", arti: "mendapatkan (uang/penghasilan)", type: "Regular" },
+            { v1: "eat", v2: "ate", v3: "eaten", arti: "makan", type: "Irregular" },
+            { v1: "educate", v2: "educated", v3: "educated", arti: "mendidik", type: "Regular" },
+            { v1: "empty", v2: "emptied", v3: "emptied", arti: "mengosongkan", type: "Regular" },
+            { v1: "encourage", v2: "encouraged", v3: "encouraged", arti: "mendorong / menyemangati", type: "Regular" },
+            { v1: "end", v2: "ended", v3: "ended", arti: "mengakhiri", type: "Regular" },
+            { v1: "enjoy", v2: "enjoyed", v3: "enjoyed", arti: "menikmati", type: "Regular" },
+            { v1: "enter", v2: "entered", v3: "entered", arti: "masuk", type: "Regular" },
+            { v1: "entertain", v2: "entertained", v3: "entertained", arti: "menghibur", type: "Regular" },
+            { v1: "escape", v2: "escaped", v3: "escaped", arti: "melarikan diri", type: "Regular" },
+            { v1: "examine", v2: "examined", v3: "examined", arti: "menguji / memeriksa", type: "Regular" },
+            { v1: "exist", v2: "existed", v3: "existed", arti: "ada / eksis", type: "Regular" },
+            { v1: "expect", v2: "expected", v3: "expected", arti: "mengharapkan", type: "Regular" },
+            { v1: "explain", v2: "explained", v3: "explained", arti: "menjelaskan", type: "Regular" },
+            { v1: "explode", v2: "exploded", v3: "exploded", arti: "meledak", type: "Regular" },
+
+            // F
+            { v1: "face", v2: "faced", v3: "faced", arti: "menghadapi", type: "Regular" },
+            { v1: "fail", v2: "failed", v3: "failed", arti: "gagal", type: "Regular" },
+            { v1: "fall", v2: "fell", v3: "fallen", arti: "jatuh", type: "Irregular" },
+            { v1: "fasten", v2: "fastened", v3: "fastened", arti: "mengencangkan", type: "Regular" },
+            { v1: "feed", v2: "fed", v3: "fed", arti: "memberi makan", type: "Irregular" },
+            { v1: "feel", v2: "felt", v3: "felt", arti: "merasa", type: "Irregular" },
+            { v1: "fetch", v2: "fetched", v3: "fetched", arti: "menjemput / mengambil", type: "Regular" },
+            { v1: "fight", v2: "fought", v3: "fought", arti: "berkelahi / berjuang", type: "Irregular" },
+            { v1: "fill", v2: "filled", v3: "filled", arti: "mengisi", type: "Regular" },
+            { v1: "find", v2: "found", v3: "found", arti: "menemukan", type: "Irregular" },
+            { v1: "finish", v2: "finished", v3: "finished", arti: "menyelesaikan", type: "Regular" },
+            { v1: "fire", v2: "fired", v3: "fired", arti: "memecat / menembak", type: "Regular" },
+            { v1: "fit", v2: "fit / fitted", v3: "fit / fitted", arti: "pas / cocok", type: "Irregular" },
+            { v1: "fix", v2: "fixed", v3: "fixed", arti: "memperbaiki", type: "Regular" },
+            { v1: "float", v2: "floated", v3: "floated", arti: "mengapung", type: "Regular" },
+            { v1: "flow", v2: "flowed", v3: "flowed", arti: "mengalir", type: "Regular" },
+            { v1: "fly", v2: "flew", v3: "flown", arti: "terbang", type: "Irregular" },
+            { v1: "fold", v2: "folded", v3: "folded", arti: "melipat", type: "Regular" },
+            { v1: "follow", v2: "followed", v3: "followed", arti: "mengikuti", type: "Regular" },
+            { v1: "force", v2: "forced", v3: "forced", arti: "memaksa", type: "Regular" },
+            { v1: "forget", v2: "forgot", v3: "forgotten", arti: "lupa", type: "Irregular" },
+            { v1: "forgive", v2: "forgave", v3: "forgiven", arti: "memaafkan", type: "Irregular" },
+            { v1: "form", v2: "formed", v3: "formed", arti: "membentuk", type: "Regular" },
+            { v1: "freeze", v2: "froze", v3: "frozen", arti: "membeku", type: "Irregular" },
+            { v1: "fry", v2: "fried", v3: "fried", arti: "menggoreng", type: "Regular" },
+
+            // G
+            { v1: "gather", v2: "gathered", v3: "gathered", arti: "berkumpul / mengumpulkan", type: "Regular" },
+            { v1: "get", v2: "got", v3: "got / gotten", arti: "mendapatkan", type: "Irregular" },
+            { v1: "give", v2: "gave", v3: "given", arti: "memberi", type: "Irregular" },
+            { v1: "glow", v2: "glowed", v3: "glowed", arti: "bersinar", type: "Regular" },
+            { v1: "glue", v2: "glued", v3: "glued", arti: "menempelkan (lem)", type: "Regular" },
+            { v1: "go", v2: "went", v3: "gone", arti: "pergi", type: "Irregular" },
+            { v1: "grab", v2: "grabbed", v3: "grabbed", arti: "merebut", type: "Regular" },
+            { v1: "greet", v2: "greeted", v3: "greeted", arti: "menyapa", type: "Regular" },
+            { v1: "grow", v2: "grew", v3: "grown", arti: "tumbuh / menanam", type: "Irregular" },
+            { v1: "guard", v2: "guarded", v3: "guarded", arti: "menjaga", type: "Regular" },
+            { v1: "guess", v2: "guessed", v3: "guessed", arti: "menebak", type: "Regular" },
+            { v1: "guide", v2: "guided", v3: "guided", arti: "membimbing", type: "Regular" },
+
+            // H
+            { v1: "handle", v2: "handled", v3: "handled", arti: "menangani", type: "Regular" },
+            { v1: "hang", v2: "hung", v3: "hung", arti: "menggantung", type: "Irregular" },
+            { v1: "happen", v2: "happened", v3: "happened", arti: "terjadi", type: "Regular" },
+            { v1: "hate", v2: "hated", v3: "hated", arti: "membenci", type: "Regular" },
+            { v1: "have", v2: "had", v3: "had", arti: "memiliki", type: "Irregular" },
+            { v1: "heal", v2: "healed", v3: "healed", arti: "menyembuhkan", type: "Regular" },
+            { v1: "hear", v2: "heard", v3: "heard", arti: "mendengar", type: "Irregular" },
+            { v1: "heat", v2: "heated", v3: "heated", arti: "memanaskan", type: "Regular" },
+            { v1: "help", v2: "helped", v3: "helped", arti: "membantu", type: "Regular" },
+            { v1: "hide", v2: "hid", v3: "hidden", arti: "menyembunyikan", type: "Irregular" },
+            { v1: "hit", v2: "hit", v3: "hit", arti: "memukul", type: "Irregular" },
+            { v1: "hold", v2: "held", v3: "held", arti: "memegang / menahan", type: "Irregular" },
+            { v1: "hope", v2: "hoped", v3: "hoped", arti: "berharap", type: "Regular" },
+            { v1: "hug", v2: "hugged", v3: "hugged", arti: "memeluk", type: "Regular" },
+            { v1: "hunt", v2: "hunted", v3: "hunted", arti: "berburu", type: "Regular" },
+            { v1: "hurry", v2: "hurried", v3: "hurried", arti: "bergegas", type: "Regular" },
+            { v1: "hurt", v2: "hurt", v3: "hurt", arti: "melukai / sakit", type: "Irregular" },
+
+            // I
+            { v1: "identify", v2: "identified", v3: "identified", arti: "mengidentifikasi", type: "Regular" },
+            { v1: "ignore", v2: "ignored", v3: "ignored", arti: "mengabaikan", type: "Regular" },
+            { v1: "imagine", v2: "imagined", v3: "imagined", arti: "membayangkan", type: "Regular" },
+            { v1: "improve", v2: "improved", v3: "improved", arti: "meningkatkan", type: "Regular" },
+            { v1: "include", v2: "included", v3: "included", arti: "memasukkan / termasuk", type: "Regular" },
+            { v1: "increase", v2: "increased", v3: "increased", arti: "meningkat", type: "Regular" },
+            { v1: "inform", v2: "informed", v3: "informed", arti: "memberitahu", type: "Regular" },
+            { v1: "injure", v2: "injured", v3: "injured", arti: "melukai", type: "Regular" },
+            { v1: "input", v2: "input", v3: "input", arti: "memasukkan data", type: "Irregular" },
+            { v1: "intend", v2: "intended", v3: "intended", arti: "berniat", type: "Regular" },
+            { v1: "interest", v2: "interested", v3: "interested", arti: "menarik minat", type: "Regular" },
+            { v1: "interrupt", v2: "interrupted", v3: "interrupted", arti: "menyela", type: "Regular" },
+            { v1: "introduce", v2: "introduced", v3: "introduced", arti: "memperkenalkan", type: "Regular" },
+            { v1: "invent", v2: "invented", v3: "invented", arti: "menciptakan", type: "Regular" },
+            { v1: "invite", v2: "invited", v3: "invited", arti: "mengundang", type: "Regular" },
+
+            // J
+            { v1: "jail", v2: "jailed", v3: "jailed", arti: "memenjarakan", type: "Regular" },
+            { v1: "jog", v2: "jogged", v3: "jogged", arti: "lari pelan", type: "Regular" },
+            { v1: "join", v2: "joined", v3: "joined", arti: "bergabung", type: "Regular" },
+            { v1: "joke", v2: "joked", v3: "joked", arti: "bercanda", type: "Regular" },
+            { v1: "judge", v2: "judged", v3: "judged", arti: "menghakimi / menilai", type: "Regular" },
+            { v1: "jump", v2: "jumped", v3: "jumped", arti: "melompat", type: "Regular" },
+            { v1: "justify", v2: "justified", v3: "justified", arti: "membenarkan", type: "Regular" },
+
+            // K
+            { v1: "keep", v2: "kept", v3: "kept", arti: "menjaga / menyimpan", type: "Irregular" },
+            { v1: "kick", v2: "kicked", v3: "kicked", arti: "menendang", type: "Regular" },
+            { v1: "kill", v2: "killed", v3: "killed", arti: "membunuh", type: "Regular" },
+            { v1: "kiss", v2: "kissed", v3: "kissed", arti: "mencium", type: "Regular" },
+            { v1: "kneel", v2: "knelt / kneeled", v3: "knelt / kneeled", arti: "berlutut", type: "Irregular" },
+            { v1: "knit", v2: "knit / knitted", v3: "knit / knitted", arti: "merajut", type: "Irregular" },
+            { v1: "knock", v2: "knocked", v3: "knocked", arti: "mengetuk", type: "Regular" },
+            { v1: "know", v2: "knew", v3: "known", arti: "tahu / mengetahui", type: "Irregular" },
+
+            // L
+            { v1: "label", v2: "labeled", v3: "labeled", arti: "memberi label", type: "Regular" },
+            { v1: "land", v2: "landed", v3: "landed", arti: "mendarat", type: "Regular" },
+            { v1: "laugh", v2: "laughed", v3: "laughed", arti: "tertawa", type: "Regular" },
+            { v1: "lay", v2: "laid", v3: "laid", arti: "meletakkan", type: "Irregular" },
+            { v1: "lead", v2: "led", v3: "led", arti: "memimpin", type: "Irregular" },
+            { v1: "learn", v2: "learnt / learned", v3: "learnt / learned", arti: "belajar", type: "Irregular" },
+            { v1: "leave", v2: "left", v3: "left", arti: "meninggalkan", type: "Irregular" },
+            { v1: "lend", v2: "lent", v3: "lent", arti: "meminjamkan", type: "Irregular" },
+            { v1: "let", v2: "let", v3: "let", arti: "membiarkan", type: "Irregular" },
+            { v1: "lie (berbohong)", v2: "lied", v3: "lied", arti: "berbohong", type: "Regular" },
+            { v1: "lie (berbaring)", v2: "lay", v3: "lain", arti: "berbaring", type: "Irregular" },
+            { v1: "lift", v2: "lifted", v3: "lifted", arti: "mengangkat", type: "Regular" },
+            { v1: "like", v2: "liked", v3: "liked", arti: "suka", type: "Regular" },
+            { v1: "listen", v2: "listened", v3: "listened", arti: "mendengarkan", type: "Regular" },
+            { v1: "live", v2: "lived", v3: "lived", arti: "hidup / tinggal", type: "Regular" },
+            { v1: "lock", v2: "locked", v3: "locked", arti: "mengunci", type: "Regular" },
+            { v1: "look", v2: "looked", v3: "looked", arti: "melihat / tampak", type: "Regular" },
+            { v1: "lose", v2: "lost", v3: "lost", arti: "kehilangan / kalah", type: "Irregular" },
+            { v1: "love", v2: "loved", v3: "loved", arti: "mencintai", type: "Regular" },
+
+            // M
+            { v1: "make", v2: "made", v3: "made", arti: "membuat", type: "Irregular" },
+            { v1: "manage", v2: "managed", v3: "managed", arti: "mengelola", type: "Regular" },
+            { v1: "mark", v2: "marked", v3: "marked", arti: "menandai", type: "Regular" },
+            { v1: "marry", v2: "married", v3: "married", arti: "menikah", type: "Regular" },
+            { v1: "match", v2: "matched", v3: "matched", arti: "mencocokkan", type: "Regular" },
+            { v1: "mean", v2: "meant", v3: "meant", arti: "berarti / bermaksud", type: "Irregular" },
+            { v1: "measure", v2: "measured", v3: "measured", arti: "mengukur", type: "Regular" },
+            { v1: "meet", v2: "met", v3: "met", arti: "bertemu", type: "Irregular" },
+            { v1: "melt", v2: "melted", v3: "melted", arti: "meleleh", type: "Regular" },
+            { v1: "memorize", v2: "memorized", v3: "memorized", arti: "menghafal", type: "Regular" },
+            { v1: "mend", v2: "mended", v3: "mended", arti: "memperbaiki (menambal)", type: "Regular" },
+            { v1: "mind", v2: "minded", v3: "minded", arti: "keberatan", type: "Regular" },
+            { v1: "miss", v2: "missed", v3: "missed", arti: "merindukan / melewatkan", type: "Regular" },
+            { v1: "mix", v2: "mixed", v3: "mixed", arti: "mencampur", type: "Regular" },
+            { v1: "move", v2: "moved", v3: "moved", arti: "bergerak / pindah", type: "Regular" },
+            { v1: "multiply", v2: "multiplied", v3: "multiplied", arti: "mengalikan", type: "Regular" },
+
+            // N & O
+            { v1: "nail", v2: "nailed", v3: "nailed", arti: "memaku", type: "Regular" },
+            { v1: "name", v2: "named", v3: "named", arti: "menamai", type: "Regular" },
+            { v1: "need", v2: "needed", v3: "needed", arti: "membutuhkan", type: "Regular" },
+            { v1: "notice", v2: "noticed", v3: "noticed", arti: "memperhatikan", type: "Regular" },
+            { v1: "obey", v2: "obeyed", v3: "obeyed", arti: "mematuhi", type: "Regular" },
+            { v1: "object", v2: "objected", v3: "objected", arti: "keberatan", type: "Regular" },
+            { v1: "observe", v2: "observed", v3: "observed", arti: "mengamati", type: "Regular" },
+            { v1: "obtain", v2: "obtained", v3: "obtained", arti: "memperoleh", type: "Regular" },
+            { v1: "occur", v2: "occurred", v3: "occurred", arti: "terjadi", type: "Regular" },
+            { v1: "offer", v2: "offered", v3: "offered", arti: "menawarkan", type: "Regular" },
+            { v1: "open", v2: "opened", v3: "opened", arti: "membuka", type: "Regular" },
+            { v1: "order", v2: "ordered", v3: "ordered", arti: "memesan / memerintah", type: "Regular" },
+            { v1: "overcome", v2: "overcame", v3: "overcome", arti: "mengatasi", type: "Irregular" },
+            { v1: "owe", v2: "owed", v3: "owed", arti: "berhutang", type: "Regular" },
+            { v1: "own", v2: "owned", v3: "owned", arti: "memiliki", type: "Regular" },
+
+            // P
+            { v1: "pack", v2: "packed", v3: "packed", arti: "mengemas", type: "Regular" },
+            { v1: "paint", v2: "painted", v3: "painted", arti: "mengecat / melukis", type: "Regular" },
+            { v1: "park", v2: "parked", v3: "parked", arti: "memarkir", type: "Regular" },
+            { v1: "participate", v2: "participated", v3: "participated", arti: "berpartisipasi", type: "Regular" },
+            { v1: "pass", v2: "passed", v3: "passed", arti: "melewati / lulus", type: "Regular" },
+            { v1: "pause", v2: "paused", v3: "paused", arti: "berhenti sejenak", type: "Regular" },
+            { v1: "pay", v2: "paid", v3: "paid", arti: "membayar", type: "Irregular" },
+            { v1: "perform", v2: "performed", v3: "performed", arti: "menampilkan / melakukan", type: "Regular" },
+            { v1: "permit", v2: "permitted", v3: "permitted", arti: "mengizinkan", type: "Regular" },
+            { v1: "phone", v2: "phoned", v3: "phoned", arti: "menelepon", type: "Regular" },
+            { v1: "pick", v2: "picked", v3: "picked", arti: "memetik / mengambil", type: "Regular" },
+            { v1: "plan", v2: "planned", v3: "planned", arti: "merencanakan", type: "Regular" },
+            { v1: "plant", v2: "planted", v3: "planted", arti: "menanam", type: "Regular" },
+            { v1: "play", v2: "played", v3: "played", arti: "bermain", type: "Regular" },
+            { v1: "point", v2: "pointed", v3: "pointed", arti: "menunjuk", type: "Regular" },
+            { v1: "practice", v2: "practiced", v3: "practiced", arti: "berlatih", type: "Regular" },
+            { v1: "pray", v2: "prayed", v3: "prayed", arti: "berdoa", type: "Regular" },
+            { v1: "prefer", v2: "preferred", v3: "preferred", arti: "lebih suka", type: "Regular" },
+            { v1: "prepare", v2: "prepared", v3: "prepared", arti: "mempersiapkan", type: "Regular" },
+            { v1: "press", v2: "pressed", v3: "pressed", arti: "menekan", type: "Regular" },
+            { v1: "pretend", v2: "pretended", v3: "pretended", arti: "berpura-pura", type: "Regular" },
+            { v1: "prevent", v2: "prevented", v3: "prevented", arti: "mencegah", type: "Regular" },
+            { v1: "print", v2: "printed", v3: "printed", arti: "mencetak", type: "Regular" },
+            { v1: "produce", v2: "produced", v3: "produced", arti: "menghasilkan", type: "Regular" },
+            { v1: "promise", v2: "promised", v3: "promised", arti: "berjanji", type: "Regular" },
+            { v1: "protect", v2: "protected", v3: "protected", arti: "melindungi", type: "Regular" },
+            { v1: "provide", v2: "provided", v3: "provided", arti: "menyediakan", type: "Regular" },
+            { v1: "pull", v2: "pulled", v3: "pulled", arti: "menarik", type: "Regular" },
+            { v1: "punish", v2: "punished", v3: "punished", arti: "menghukum", type: "Regular" },
+            { v1: "push", v2: "pushed", v3: "pushed", arti: "mendorong", type: "Regular" },
+            { v1: "put", v2: "put", v3: "put", arti: "meletakkan", type: "Irregular" },
+
+            // Q & R
+            { v1: "qualify", v2: "qualified", v3: "qualified", arti: "memenuhi syarat", type: "Regular" },
+            { v1: "question", v2: "questioned", v3: "questioned", arti: "mempertanyakan", type: "Regular" },
+            { v1: "quit", v2: "quit", v3: "quit", arti: "berhenti / keluar", type: "Irregular" },
+            { v1: "race", v2: "raced", v3: "raced", arti: "berpacu / balapan", type: "Regular" },
+            { v1: "rain", v2: "rained", v3: "rained", arti: "hujan", type: "Regular" },
+            { v1: "raise", v2: "raised", v3: "raised", arti: "mengangkat / menaikkan", type: "Regular" },
+            { v1: "reach", v2: "reached", v3: "reached", arti: "mencapai (jangkauan)", type: "Regular" },
+            { v1: "read", v2: "read", v3: "read", arti: "membaca", type: "Irregular" },
+            { v1: "realize", v2: "realized", v3: "realized", arti: "menyadari", type: "Regular" },
+            { v1: "receive", v2: "received", v3: "received", arti: "menerima", type: "Regular" },
+            { v1: "recognize", v2: "recognized", v3: "recognized", arti: "mengenali", type: "Regular" },
+            { v1: "record", v2: "recorded", v3: "recorded", arti: "merekam", type: "Regular" },
+            { v1: "reduce", v2: "reduced", v3: "reduced", arti: "mengurangi", type: "Regular" },
+            { v1: "refuse", v2: "refused", v3: "refused", arti: "menolak", type: "Regular" },
+            { v1: "regret", v2: "regretted", v3: "regretted", arti: "menyesal", type: "Regular" },
+            { v1: "relax", v2: "relaxed", v3: "relaxed", arti: "bersantai", type: "Regular" },
+            { v1: "release", v2: "released", v3: "released", arti: "melepaskan", type: "Regular" },
+            { v1: "rely", v2: "relied", v3: "relied", arti: "mengandalkan", type: "Regular" },
+            { v1: "remain", v2: "remained", v3: "remained", arti: "tersisa / tetap", type: "Regular" },
+            { v1: "remember", v2: "remembered", v3: "remembered", arti: "mengingat", type: "Regular" },
+            { v1: "remind", v2: "reminded", v3: "reminded", arti: "mengingatkan", type: "Regular" },
+            { v1: "remove", v2: "removed", v3: "removed", arti: "menghapus / memindahkan", type: "Regular" },
+            { v1: "repair", v2: "repaired", v3: "repaired", arti: "memperbaiki", type: "Regular" },
+            { v1: "repeat", v2: "repeated", v3: "repeated", arti: "mengulangi", type: "Regular" },
+            { v1: "replace", v2: "replaced", v3: "replaced", arti: "menggantikan", type: "Regular" },
+            { v1: "reply", v2: "replied", v3: "replied", arti: "membalas", type: "Regular" },
+            { v1: "report", v2: "reported", v3: "reported", arti: "melaporkan", type: "Regular" },
+            { v1: "request", v2: "requested", v3: "requested", arti: "meminta", type: "Regular" },
+            { v1: "rescue", v2: "rescued", v3: "rescued", arti: "menyelamatkan", type: "Regular" },
+            { v1: "retire", v2: "retired", v3: "retired", arti: "pensiun", type: "Regular" },
+            { v1: "return", v2: "returned", v3: "returned", arti: "kembali / mengembalikan", type: "Regular" },
+            { v1: "ride", v2: "rode", v3: "ridden", arti: "mengendarai", type: "Irregular" },
+            { v1: "ring", v2: "rang", v3: "rung", arti: "berdering", type: "Irregular" },
+            { v1: "rise", v2: "rose", v3: "risen", arti: "terbit / bangkit", type: "Irregular" },
+            { v1: "risk", v2: "risked", v3: "risked", arti: "mengambil risiko", type: "Regular" },
+            { v1: "rob", v2: "robbed", v3: "robbed", arti: "merampok", type: "Regular" },
+            { v1: "roll", v2: "rolled", v3: "rolled", arti: "menggelinding", type: "Regular" },
+            { v1: "rub", v2: "rubbed", v3: "rubbed", arti: "menggosok", type: "Regular" },
+            { v1: "ruin", v2: "ruined", v3: "ruined", arti: "menghancurkan (reputasi/benda)", type: "Regular" },
+            { v1: "rule", v2: "ruled", v3: "ruled", arti: "memerintah", type: "Regular" },
+            { v1: "run", v2: "ran", v3: "run", arti: "berlari", type: "Irregular" },
+            { v1: "rush", v2: "rushed", v3: "rushed", arti: "bergegas", type: "Regular" },
+
+            // S
+            { v1: "sail", v2: "sailed", v3: "sailed", arti: "berlayar", type: "Regular" },
+            { v1: "satisfy", v2: "satisfied", v3: "satisfied", arti: "memuaskan", type: "Regular" },
+            { v1: "save", v2: "saved", v3: "saved", arti: "menyimpan / menyelamatkan", type: "Regular" },
+            { v1: "say", v2: "said", v3: "said", arti: "mengatakan", type: "Irregular" },
+            { v1: "scare", v2: "scared", v3: "scared", arti: "menakuti", type: "Regular" },
+            { v1: "scream", v2: "screamed", v3: "screamed", arti: "berteriak", type: "Regular" },
+            { v1: "search", v2: "searched", v3: "searched", arti: "mencari", type: "Regular" },
+            { v1: "see", v2: "saw", v3: "seen", arti: "melihat", type: "Irregular" },
+            { v1: "seek", v2: "sought", v3: "sought", arti: "mencari", type: "Irregular" },
+            { v1: "seem", v2: "seemed", v3: "seemed", arti: "tampak", type: "Regular" },
+            { v1: "sell", v2: "sold", v3: "sold", arti: "menjual", type: "Irregular" },
+            { v1: "send", v2: "sent", v3: "sent", arti: "mengirim", type: "Irregular" },
+            { v1: "serve", v2: "served", v3: "served", arti: "melayani", type: "Regular" },
+            { v1: "set", v2: "set", v3: "set", arti: "mengatur", type: "Irregular" },
+            { v1: "settle", v2: "settled", v3: "settled", arti: "menetap / menyelesaikan", type: "Regular" },
+            { v1: "shake", v2: "shook", v3: "shaken", arti: "mengguncang", type: "Irregular" },
+            { v1: "share", v2: "shared", v3: "shared", arti: "berbagi", type: "Regular" },
+            { v1: "shave", v2: "shaved", v3: "shaved", arti: "mencukur", type: "Regular" },
+            { v1: "shoot", v2: "shot", v3: "shot", arti: "menembak", type: "Irregular" },
+            { v1: "shop", v2: "shopped", v3: "shopped", arti: "berbelanja", type: "Regular" },
+            { v1: "show", v2: "showed", v3: "shown / showed", arti: "menunjukkan", type: "Irregular" },
+            { v1: "shrink", v2: "shrank", v3: "shrunk", arti: "menyusut", type: "Irregular" },
+            { v1: "shut", v2: "shut", v3: "shut", arti: "menutup", type: "Irregular" },
+            { v1: "sign", v2: "signed", v3: "signed", arti: "menandatangani", type: "Regular" },
+            { v1: "sing", v2: "sang", v3: "sung", arti: "menyanyi", type: "Irregular" },
+            { v1: "sink", v2: "sank", v3: "sunk", arti: "tenggelam", type: "Irregular" },
+            { v1: "sit", v2: "sat", v3: "sat", arti: "duduk", type: "Irregular" },
+            { v1: "sleep", v2: "slept", v3: "slept", arti: "tidur", type: "Irregular" },
+            { v1: "slide", v2: "slid", v3: "slid", arti: "meluncur", type: "Irregular" },
+            { v1: "slip", v2: "slipped", v3: "slipped", arti: "terpeleset", type: "Regular" },
+            { v1: "smell", v2: "smelt / smelled", v3: "smelt / smelled", arti: "mencium (bau)", type: "Irregular" },
+            { v1: "smile", v2: "smiled", v3: "smiled", arti: "tersenyum", type: "Regular" },
+            { v1: "smoke", v2: "smoked", v3: "smoked", arti: "merokok / berasap", type: "Regular" },
+            { v1: "snow", v2: "snowed", v3: "snowed", arti: "turun salju", type: "Regular" },
+            { v1: "sound", v2: "sounded", v3: "sounded", arti: "terdengar", type: "Regular" },
+            { v1: "speak", v2: "spoke", v3: "spoken", arti: "berbicara", type: "Irregular" },
+            { v1: "spell", v2: "spelt / spelled", v3: "spelt / spelled", arti: "mengeja", type: "Irregular" },
+            { v1: "spend", v2: "spent", v3: "spent", arti: "menghabiskan", type: "Irregular" },
+            { v1: "spill", v2: "spilt / spilled", v3: "spilt / spilled", arti: "menumpahkan", type: "Irregular" },
+            { v1: "spin", v2: "spun", v3: "spun", arti: "berputar", type: "Irregular" },
+            { v1: "split", v2: "split", v3: "split", arti: "membelah / membagi", type: "Irregular" },
+            { v1: "spoil", v2: "spoilt / spoiled", v3: "spoilt / spoiled", arti: "merusak / memanjakan", type: "Irregular" },
+            { v1: "spread", v2: "spread", v3: "spread", arti: "menyebarkan", type: "Irregular" },
+            { v1: "stand", v2: "stood", v3: "stood", arti: "berdiri", type: "Irregular" },
+            { v1: "stare", v2: "stared", v3: "stared", arti: "menatap", type: "Regular" },
+            { v1: "start", v2: "started", v3: "started", arti: "memulai", type: "Regular" },
+            { v1: "stay", v2: "stayed", v3: "stayed", arti: "tinggal / menetap", type: "Regular" },
+            { v1: "steal", v2: "stole", v3: "stolen", arti: "mencuri", type: "Irregular" },
+            { v1: "step", v2: "stepped", v3: "stepped", arti: "melangkah", type: "Regular" },
+            { v1: "stick", v2: "stuck", v3: "stuck", arti: "menempel", type: "Irregular" },
+            { v1: "sting", v2: "stung", v3: "stung", arti: "menyengat", type: "Irregular" },
+            { v1: "stink", v2: "stank", v3: "stunk", arti: "berbau busuk", type: "Irregular" },
+            { v1: "stop", v2: "stopped", v3: "stopped", arti: "berhenti", type: "Regular" },
+            { v1: "store", v2: "stored", v3: "stored", arti: "menyimpan (barang)", type: "Regular" },
+            { v1: "strike", v2: "struck", v3: "struck", arti: "memukul / mogok", type: "Irregular" },
+            { v1: "study", v2: "studied", v3: "studied", arti: "belajar", type: "Regular" },
+            { v1: "succeed", v2: "succeeded", v3: "succeeded", arti: "berhasil", type: "Regular" },
+            { v1: "suffer", v2: "suffered", v3: "suffered", arti: "menderita", type: "Regular" },
+            { v1: "suggest", v2: "suggested", v3: "suggested", arti: "menyarankan", type: "Regular" },
+            { v1: "supply", v2: "supplied", v3: "supplied", arti: "memasok", type: "Regular" },
+            { v1: "support", v2: "supported", v3: "supported", arti: "mendukung", type: "Regular" },
+            { v1: "suppose", v2: "supposed", v3: "supposed", arti: "mengira / menduga", type: "Regular" },
+            { v1: "surprise", v2: "surprised", v3: "surprised", arti: "mengejutkan", type: "Regular" },
+            { v1: "survive", v2: "survived", v3: "survived", arti: "bertahan hidup", type: "Regular" },
+            { v1: "suspect", v2: "suspected", v3: "suspected", arti: "mencurigai", type: "Regular" },
+            { v1: "swallow", v2: "swallowed", v3: "swallowed", arti: "menelan", type: "Regular" },
+            { v1: "swear", v2: "swore", v3: "sworn", arti: "bersumpah", type: "Irregular" },
+            { v1: "sweat", v2: "sweated", v3: "sweated", arti: "berkeringat", type: "Regular" },
+            { v1: "sweep", v2: "swept", v3: "swept", arti: "menyapu", type: "Irregular" },
+            { v1: "swim", v2: "swam", v3: "swum", arti: "berenang", type: "Irregular" },
+            { v1: "swing", v2: "swung", v3: "swung", arti: "mengayun", type: "Irregular" },
+            { v1: "switch", v2: "switched", v3: "switched", arti: "mengalihkan", type: "Regular" },
+
+            // T
+            { v1: "take", v2: "took", v3: "taken", arti: "mengambil", type: "Irregular" },
+            { v1: "talk", v2: "talked", v3: "talked", arti: "berbicara", type: "Regular" },
+            { v1: "taste", v2: "tasted", v3: "tasted", arti: "mencicipi", type: "Regular" },
+            { v1: "teach", v2: "taught", v3: "taught", arti: "mengajar", type: "Irregular" },
+            { v1: "tear", v2: "tore", v3: "torn", arti: "merobek", type: "Irregular" },
+            { v1: "tease", v2: "teased", v3: "teased", arti: "menggoda", type: "Regular" },
+            { v1: "telephone", v2: "telephoned", v3: "telephoned", arti: "menelepon", type: "Regular" },
+            { v1: "tell", v2: "told", v3: "told", arti: "memberitahu", type: "Irregular" },
+            { v1: "test", v2: "tested", v3: "tested", arti: "menguji", type: "Regular" },
+            { v1: "thank", v2: "thanked", v3: "thanked", arti: "berterima kasih", type: "Regular" },
+            { v1: "think", v2: "thought", v3: "thought", arti: "berpikir", type: "Irregular" },
+            { v1: "throw", v2: "threw", v3: "thrown", arti: "melempar", type: "Irregular" },
+            { v1: "tie", v2: "tied", v3: "tied", arti: "mengikat", type: "Regular" },
+            { v1: "touch", v2: "touched", v3: "touched", arti: "menyentuh", type: "Regular" },
+            { v1: "trade", v2: "traded", v3: "traded", arti: "berdagang", type: "Regular" },
+            { v1: "train", v2: "trained", v3: "trained", arti: "melatih", type: "Regular" },
+            { v1: "transport", v2: "transported", v3: "transported", arti: "mengangkut", type: "Regular" },
+            { v1: "travel", v2: "traveled", v3: "traveled", arti: "bepergian", type: "Regular" },
+            { v1: "treat", v2: "treated", v3: "treated", arti: "memperlakukan", type: "Regular" },
+            { v1: "trick", v2: "tricked", v3: "tricked", arti: "menipu", type: "Regular" },
+            { v1: "trust", v2: "trusted", v3: "trusted", arti: "mempercayai", type: "Regular" },
+            { v1: "try", v2: "tried", v3: "tried", arti: "mencoba", type: "Regular" },
+            { v1: "turn", v2: "turned", v3: "turned", arti: "berbelok / memutar", type: "Regular" },
+            { v1: "type", v2: "typed", v3: "typed", arti: "mengetik", type: "Regular" },
+
+            // U & V
+            { v1: "understand", v2: "understood", v3: "understood", arti: "mengerti", type: "Irregular" },
+            { v1: "undress", v2: "undressed", v3: "undressed", arti: "melepas pakaian", type: "Regular" },
+            { v1: "unite", v2: "united", v3: "united", arti: "mempersatukan", type: "Regular" },
+            { v1: "unlock", v2: "unlocked", v3: "unlocked", arti: "membuka kunci", type: "Regular" },
+            { v1: "unpack", v2: "unpacked", v3: "unpacked", arti: "membongkar (barang)", type: "Regular" },
+            { v1: "update", v2: "updated", v3: "updated", arti: "memperbarui", type: "Regular" },
+            { v1: "use", v2: "used", v3: "used", arti: "menggunakan", type: "Regular" },
+            { v1: "vanish", v2: "vanished", v3: "vanished", arti: "menghilang", type: "Regular" },
+            { v1: "visit", v2: "visited", v3: "visited", arti: "mengunjungi", type: "Regular" },
+            { v1: "vote", v2: "voted", v3: "voted", arti: "memilih (suara)", type: "Regular" },
+
+            // W, X, Y, Z
+            { v1: "wait", v2: "waited", v3: "waited", arti: "menunggu", type: "Regular" },
+            { v1: "wake", v2: "woke", v3: "woken", arti: "bangun", type: "Irregular" },
+            { v1: "walk", v2: "walked", v3: "walked", arti: "berjalan", type: "Regular" },
+            { v1: "want", v2: "wanted", v3: "wanted", arti: "menginginkan", type: "Regular" },
+            { v1: "warm", v2: "warmed", v3: "warmed", arti: "menghangatkan", type: "Regular" },
+            { v1: "warn", v2: "warned", v3: "warned", arti: "memperingatkan", type: "Regular" },
+            { v1: "wash", v2: "washed", v3: "washed", arti: "mencuci", type: "Regular" },
+            { v1: "waste", v2: "wasted", v3: "wasted", arti: "membuang-buang", type: "Regular" },
+            { v1: "watch", v2: "watched", v3: "watched", arti: "menonton", type: "Regular" },
+            { v1: "water", v2: "watered", v3: "watered", arti: "menyiram", type: "Regular" },
+            { v1: "wave", v2: "waved", v3: "waved", arti: "melambai", type: "Regular" },
+            { v1: "wear", v2: "wore", v3: "worn", arti: "memakai", type: "Irregular" },
+            { v1: "weigh", v2: "weighed", v3: "weighed", arti: "menimbang", type: "Regular" },
+            { v1: "welcome", v2: "welcomed", v3: "welcomed", arti: "menyambut", type: "Regular" },
+            { v1: "whisper", v2: "whispered", v3: "whispered", arti: "membisikkan", type: "Regular" },
+            { v1: "whistle", v2: "whistled", v3: "whistled", arti: "bersiul", type: "Regular" },
+            { v1: "win", v2: "won", v3: "won", arti: "menang", type: "Irregular" },
+            { v1: "wink", v2: "winked", v3: "winked", arti: "mengedipkan mata", type: "Regular" },
+            { v1: "wipe", v2: "wiped", v3: "wiped", arti: "mengusap / menyeka", type: "Regular" },
+            { v1: "wish", v2: "wished", v3: "wished", arti: "berharap", type: "Regular" },
+            { v1: "wonder", v2: "wondered", v3: "wondered", arti: "bertanya-tanya / heran", type: "Regular" },
+            { v1: "work", v2: "worked", v3: "worked", arti: "bekerja", type: "Regular" },
+            { v1: "worry", v2: "worried", v3: "worried", arti: "khawatir", type: "Regular" },
+            { v1: "wrap", v2: "wrapped", v3: "wrapped", arti: "membungkus", type: "Regular" },
+            { v1: "wreck", v2: "wrecked", v3: "wrecked", arti: "menghancurkan", type: "Regular" },
+            { v1: "write", v2: "wrote", v3: "written", arti: "menulis", type: "Irregular" },
+            { v1: "x-ray", v2: "x-rayed", v3: "x-rayed", arti: "memindai dengan sinar-X", type: "Regular" },
+            { v1: "yawn", v2: "yawned", v3: "yawned", arti: "menguap", type: "Regular" },
+            { v1: "yell", v2: "yelled", v3: "yelled", arti: "berteriak", type: "Regular" },
+            { v1: "zip", v2: "zipped", v3: "zipped", arti: "menutup resleting", type: "Regular" },
+            { v1: "zoom", v2: "zoomed", v3: "zoomed", arti: "memperbesar tampilan", type: "Regular" }
+        ];
+
+        const tableBody = document.getElementById("tableBody");
+        const searchInput = document.getElementById("searchInput");
+        const emptyState = document.getElementById("emptyState");
+        const wordCount = document.getElementById("wordCount");
+
+        // Fungsi untuk menentukan warna badge
+        function getBadgeColor(type) {
+            if (type === "Regular") {
+                return "bg-blue-50 text-blue-700 border-blue-200";
+            }
+            return "bg-purple-50 text-purple-700 border-purple-200";
+        }
+
+        // Fungsi untuk merender tabel
+        function renderTable(data) {
+            tableBody.innerHTML = ""; 
+            
+            // Perbarui jumlah kata
+            wordCount.innerText = data.length;
+
+            if (data.length === 0) {
+                emptyState.classList.remove("hidden");
+                return;
+            } else {
+                emptyState.classList.add("hidden");
+            }
+
+            // Loop untuk membuat baris tabel
+            data.forEach((item, index) => {
+                const row = document.createElement("tr");
+                
+                // Menambahkan warna zebra (belang-belang) untuk kemudahan membaca
+                row.className = `hover:bg-gray-100/60 transition-colors duration-150 ${index % 2 === 0 ? 'bg-white' : 'bg-gray-50/40'}`;
+                
+                const badgeClass = getBadgeColor(item.type);
+
+                row.innerHTML = `
+                    <td class="py-4 px-6 text-sm font-medium text-gray-900">
+                        ${item.v1} 
+                        <span class="inline-block ml-2 text-[10px] font-semibold px-2 py-0.5 rounded-full border ${badgeClass}">
+                            ${item.type}
+                        </span>
+                    </td>
+                    <td class="py-4 px-6 text-sm text-gray-600">${item.v2}</td>
+                    <td class="py-4 px-6 text-sm text-gray-600">${item.v3}</td>
+                    <td class="py-4 px-6 text-sm text-gray-600">${item.arti}</td>
+                `;
+                tableBody.appendChild(row);
+            });
+        }
+
+        // Tampilkan semua data saat pertama kali dimuat
+        renderTable(verbsList);
+
+        // Event listener untuk pencarian real-time
+        searchInput.addEventListener("input", function(e) {
+            const searchTerm = e.target.value.toLowerCase().trim();
+            
+            const filteredData = verbsList.filter(item => {
+                return item.v1.toLowerCase().includes(searchTerm) || 
+                       item.v2.toLowerCase().includes(searchTerm) || 
+                       item.v3.toLowerCase().includes(searchTerm) || 
+                       item.arti.toLowerCase().includes(searchTerm) ||
+                       item.type.toLowerCase().includes(searchTerm); // Fitur cari berdasarkan tipe
+            });
+
+            renderTable(filteredData);
+        });
+    </script>
+</body>
+</html>
