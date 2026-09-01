@@ -25,7 +25,7 @@
     </script>
     
     <style>
-        /* Gaya Khusus Pencetakan (Print Stylesheet) */
+        /* CSS Khusus Format Cetak (Print / PDF) */
         @media print {
             .no-print {
                 display: none !important;
@@ -48,11 +48,11 @@
                 width: 100% !important;
                 min-width: 100% !important;
                 border-collapse: collapse !important;
-                font-size: 11pt !important;
+                font-size: 10pt !important;
             }
             th, td {
                 border: 1px solid #e5e7eb !important;
-                padding: 8px 12px !important;
+                padding: 6px 10px !important;
             }
             th {
                 background-color: #f9fafb !important;
@@ -60,7 +60,7 @@
                 print-color-adjust: exact;
             }
             .badge-print {
-                border: 1px solid #ccc !important;
+                border: 1px solid #999 !important;
                 background-color: transparent !important;
                 color: #000 !important;
             }
@@ -81,8 +81,8 @@
             </p>
         </header>
 
-        <!-- Search Bar & Action Section (No Print) -->
-        <div class="max-w-3xl mx-auto mb-8 flex flex-col sm:flex-row gap-3 no-print">
+        <!-- Search Bar & Action Buttons (Hidden on Print) -->
+        <div class="max-w-4xl mx-auto mb-8 flex flex-col md:flex-row gap-3 no-print">
             <div class="relative flex-1 shadow-sm rounded-2xl bg-white">
                 <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
                     <!-- Search Icon -->
@@ -98,17 +98,31 @@
                 >
             </div>
             
-            <!-- Tombol Cetak / Print -->
-            <button 
-                onclick="window.print()" 
-                class="inline-flex items-center justify-center px-5 py-3.5 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-2xl shadow-sm transition-all duration-200 gap-2 shrink-0 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
-                title="Cetak atau simpan ke PDF"
-            >
-                <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
-                </svg>
-                <span>Cetak / PDF</span>
-            </button>
+            <div class="flex gap-2 shrink-0">
+                <!-- Tombol 1: Cetak Sesuai Filter -->
+                <button 
+                    onclick="window.print()" 
+                    class="flex-1 md:flex-none inline-flex items-center justify-center px-4 py-3.5 bg-gray-800 hover:bg-gray-900 text-white font-medium rounded-2xl shadow-sm transition-all duration-200 gap-2 focus:outline-none focus:ring-2 focus:ring-gray-700"
+                    title="Cetak hasil pencarian/filter saat ini"
+                >
+                    <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
+                    </svg>
+                    <span>Cetak Tampilan</span>
+                </button>
+
+                <!-- Tombol 2: Cetak Semua Verb -->
+                <button 
+                    onclick="printAllVerbs()" 
+                    class="flex-1 md:flex-none inline-flex items-center justify-center px-4 py-3.5 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-2xl shadow-sm transition-all duration-200 gap-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    title="Cetak seluruh 300+ kata kerja tanpa terfilter"
+                >
+                    <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+                    </svg>
+                    <span>Cetak Semua Verb</span>
+                </button>
+            </div>
         </div>
 
         <!-- Table Section -->
@@ -124,7 +138,7 @@
                         </tr>
                     </thead>
                     <tbody id="tableBody" class="divide-y divide-gray-100">
-                        <!-- Data akan di-render oleh JavaScript -->
+                        <!-- Data di-render oleh JavaScript -->
                     </tbody>
                 </table>
             </div>
@@ -146,7 +160,7 @@
     </div>
 
     <script>
-        // Database 300+ Verb A-Z Lengkap (Regular & Irregular)
+        // Database Verb A-Z
         const verbsList = [
             // A
             { v1: "absorb", v2: "absorbed", v3: "absorbed", arti: "menyerap", type: "Regular" },
@@ -671,7 +685,7 @@
         const emptyState = document.getElementById("emptyState");
         const wordCount = document.getElementById("wordCount");
 
-        // Fungsi untuk menentukan warna badge
+        // Warna Badge
         function getBadgeColor(type) {
             if (type === "Regular") {
                 return "bg-blue-50 text-blue-700 border-blue-200";
@@ -679,11 +693,9 @@
             return "bg-purple-50 text-purple-700 border-purple-200";
         }
 
-        // Fungsi untuk merender tabel
+        // Render Tabel
         function renderTable(data) {
             tableBody.innerHTML = ""; 
-            
-            // Perbarui jumlah kata
             wordCount.innerText = data.length;
 
             if (data.length === 0) {
@@ -693,11 +705,8 @@
                 emptyState.classList.add("hidden");
             }
 
-            // Loop untuk membuat baris tabel
             data.forEach((item, index) => {
                 const row = document.createElement("tr");
-                
-                // Menambahkan warna zebra (belang-belang) untuk kemudahan membaca
                 row.className = `hover:bg-gray-100/60 transition-colors duration-150 ${index % 2 === 0 ? 'bg-white' : 'bg-gray-50/40'}`;
                 
                 const badgeClass = getBadgeColor(item.type);
@@ -717,10 +726,19 @@
             });
         }
 
-        // Tampilkan semua data saat pertama kali dimuat
+        // Fungsi Cetak Semua Verb
+        function printAllVerbs() {
+            searchInput.value = "";
+            renderTable(verbsList);
+            setTimeout(() => {
+                window.print();
+            }, 100);
+        }
+
+        // Initial Load
         renderTable(verbsList);
 
-        // Event listener untuk pencarian real-time
+        // Event Listener Search
         searchInput.addEventListener("input", function(e) {
             const searchTerm = e.target.value.toLowerCase().trim();
             
