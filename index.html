@@ -24,60 +24,106 @@
         }
     </script>
     
-    <!-- Library jsPDF & AutoTable untuk Generate PDF Rapi -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
-    
     <style>
-        /* Gaya khusus saat cetak langsung browser (window.print) */
+        /* Gaya Layar Utama */
+        body {
+            background-color: #f9fafb;
+            color: #1f2937;
+        }
+
+        /* Gaya Khusus Cetak / PDF Seperti Buku (2 Kolom / 2 Halaman per Lembar) */
         @media print {
+            @page {
+                size: A4 portrait;
+                margin: 10mm;
+            }
             .no-print {
                 display: none !important;
             }
             body {
                 background-color: white !important;
                 padding: 0 !important;
+                margin: 0 !important;
                 color: black !important;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
             }
-            .max-w-6xl {
+            .print-container {
                 max-width: 100% !important;
-                width: 100% !important;
                 margin: 0 !important;
                 padding: 0 !important;
+            }
+            /* Layout Buku: Membagi area cetak menjadi 2 kolom berdampingan dalam 1 lembar kertas */
+            .book-print-layout {
+                column-count: 2;
+                column-gap: 8mm;
+                column-rule: 1px dashed #cbd5e1;
+                width: 100%;
+            }
+            .print-page-box {
+                break-inside: avoid;
+                page-break-inside: avoid;
+                margin-bottom: 15mm;
+            }
+            .print-header {
+                text-align: center;
+                margin-bottom: 10px !important;
+                border-bottom: 2px solid #1e293b;
+                padding-bottom: 6px;
+            }
+            .print-header h1 {
+                font-size: 14pt !important;
+                font-weight: bold;
+                color: #0f172a;
+            }
+            .print-header p {
+                font-size: 8pt !important;
+                color: #475569 !important;
             }
             table {
                 width: 100% !important;
                 border-collapse: collapse !important;
-                font-size: 10pt !important;
+                font-size: 8pt !important;
             }
             th, td {
-                border: 1px solid #d1d5db !important;
-                padding: 6px 10px !important;
+                border: 1px solid #94a3b8 !important;
+                padding: 4px 6px !important;
             }
-            tr {
-                page-break-inside: avoid !important;
+            th {
+                background-color: #f1f5f9 !important;
+                color: #0f172a !important;
+                font-weight: bold;
+            }
+            .badge-print {
+                border: 1px solid #64748b !important;
+                background-color: transparent !important;
+                color: #0f172a !important;
+                font-size: 6.5pt !important;
+                padding: 1px 4px !important;
+                border-radius: 4px;
             }
         }
     </style>
 </head>
-<body class="bg-gray-50 text-gray-800 antialiased min-h-screen p-4 sm:p-8">
+<body class="antialiased min-h-screen p-4 sm:p-8">
 
-    <div class="max-w-6xl mx-auto">
+    <div class="max-w-6xl mx-auto print-container">
         <!-- Header Section -->
-        <header class="text-center mb-8 mt-4">
-            <h1 class="text-3xl sm:text-4xl font-semibold text-gray-900 tracking-tight mb-2">
+        <header class="text-center mb-10 mt-6 print-header">
+            <h1 class="text-3xl sm:text-4xl font-semibold text-gray-900 tracking-tight mb-3">
                 English Verb Dictionary
             </h1>
-            <p class="text-gray-500 text-sm sm:text-base max-w-2xl mx-auto no-print">
+            <p class="text-gray-500 text-sm sm:text-base max-w-2xl mx-auto">
                 Koleksi 300+ kata kerja beserta bentuk V1, V2, V3, dan artinya. <br class="hidden sm:block">
                 Mendukung pencarian kata Inggris, Indonesia, maupun tipe (ketik <strong>"Regular"</strong> atau <strong>"Irregular"</strong>).
             </p>
         </header>
 
-        <!-- Search Bar & Action Buttons Section -->
+        <!-- Search Bar & Print All Button Section -->
         <div class="max-w-3xl mx-auto mb-8 flex flex-col sm:flex-row gap-3 no-print">
             <div class="relative flex-1 shadow-sm rounded-2xl bg-white">
                 <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                    <!-- Search Icon -->
                     <svg class="h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                     </svg>
@@ -85,40 +131,27 @@
                 <input 
                     type="text" 
                     id="searchInput" 
-                    class="block w-full pl-12 pr-4 py-3.5 border-0 rounded-2xl text-gray-900 ring-1 ring-inset ring-gray-200 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-blue-600 sm:text-base sm:leading-6 transition-all duration-200 bg-transparent outline-none" 
+                    class="block w-full pl-12 pr-4 py-4 border-0 rounded-2xl text-gray-900 ring-1 ring-inset ring-gray-200 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-blue-600 sm:text-base sm:leading-6 transition-all duration-200 bg-transparent outline-none" 
                     placeholder="Cari kata (contoh: go, pergi, ate, irregular)..."
                 >
             </div>
-            
-            <!-- Tombol Cetak PDF Rapi -->
-            <button 
-                onclick="exportToPDF()" 
-                class="inline-flex items-center justify-center px-5 py-3.5 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-2xl shadow-sm transition-all duration-200 gap-2 shrink-0 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
-                title="Unduh PDF Semua Verb"
-            >
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
-                </svg>
-                <span>Download PDF</span>
-            </button>
 
-            <!-- Tombol Cetak Langsung Browser -->
+            <!-- Tombol Cetak Semua / PDF Format Buku -->
             <button 
                 onclick="printAllVerbs()" 
-                class="inline-flex items-center justify-center px-5 py-3.5 bg-gray-800 hover:bg-gray-900 text-white font-medium rounded-2xl shadow-sm transition-all duration-200 gap-2 shrink-0 focus:outline-none focus:ring-2 focus:ring-gray-700 focus:ring-offset-2"
-                title="Cetak Langsung Semua Verb"
+                class="bg-blue-600 hover:bg-blue-700 text-white font-medium px-6 py-4 rounded-2xl shadow-sm transition-all duration-200 flex items-center justify-center gap-2 shrink-0 cursor-pointer"
             >
-                <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/>
                 </svg>
-                <span>Cetak Semua</span>
+                <span>Cetak Semua Verb (Format Buku)</span>
             </button>
         </div>
 
         <!-- Table Section -->
         <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
             <div class="overflow-x-auto">
-                <table class="w-full text-left border-collapse min-w-[700px]" id="verbTable">
+                <table class="w-full text-left border-collapse min-w-[700px]">
                     <thead>
                         <tr class="bg-gray-50/80 border-b border-gray-100">
                             <th scope="col" class="py-4 px-6 text-xs font-semibold text-gray-500 uppercase tracking-wider w-1/4">V1 (Base) & Tipe</th>
@@ -128,13 +161,13 @@
                         </tr>
                     </thead>
                     <tbody id="tableBody" class="divide-y divide-gray-100">
-                        <!-- Data di-render JavaScript -->
+                        <!-- Data akan di-render oleh JavaScript -->
                     </tbody>
                 </table>
             </div>
             
             <!-- Empty State -->
-            <div id="emptyState" class="hidden py-12 text-center no-print">
+            <div id="emptyState" class="hidden py-12 text-center">
                 <svg class="mx-auto h-12 w-12 text-gray-300 mb-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
@@ -144,12 +177,13 @@
         </div>
 
         <!-- Footer -->
-        <div class="text-center mt-8 mb-8 text-sm text-gray-400 no-print">
+        <div class="text-center mt-10 mb-8 text-sm text-gray-400 no-print">
             Total kosakata ditampilkan: <span id="wordCount" class="font-semibold text-blue-600 bg-blue-50 px-2 py-1 rounded-md">0</span>
         </div>
     </div>
 
     <script>
+        // Database 300+ Verb A-Z Lengkap (Regular & Irregular)
         const verbsList = [
             // A
             { v1: "absorb", v2: "absorbed", v3: "absorbed", arti: "menyerap", type: "Regular" },
@@ -674,6 +708,7 @@
         const emptyState = document.getElementById("emptyState");
         const wordCount = document.getElementById("wordCount");
 
+        // Fungsi untuk menentukan warna badge
         function getBadgeColor(type) {
             if (type === "Regular") {
                 return "bg-blue-50 text-blue-700 border-blue-200";
@@ -681,6 +716,7 @@
             return "bg-purple-50 text-purple-700 border-purple-200";
         }
 
+        // Fungsi untuk merender tabel di layar utama
         function renderTable(data) {
             tableBody.innerHTML = ""; 
             wordCount.innerText = data.length;
@@ -712,9 +748,10 @@
             });
         }
 
+        // Render awal semua data
         renderTable(verbsList);
 
-        // Event listener filter pencarian
+        // Real-time search
         searchInput.addEventListener("input", function(e) {
             const searchTerm = e.target.value.toLowerCase().trim();
             const filteredData = verbsList.filter(item => {
@@ -727,77 +764,115 @@
             renderTable(filteredData);
         });
 
-        // 1. Fungsi Cetak Semua Verb via Print Dialog Browser
+        // Fungsi Cetak Semua Verb dengan Layout Buku (2 Kolom per Lembar)
         function printAllVerbs() {
-            // Tampilkan semua data verb terlebih dahulu tanpa filter
-            renderTable(verbsList);
-            searchInput.value = "";
+            // Buat jendela cetak tersembunyi/baru agar format buku terisolasi sempurna
+            const printWindow = window.open('', '_blank');
             
-            // Beri sedikit jeda agar DOM ter-update sempurna sebelum mencetak
-            setTimeout(() => {
-                window.print();
-            }, 100);
-        }
-
-        // 2. Fungsi Export PDF Rapi & Terstruktur Menggunakan jsPDF AutoTable
-        function exportToPDF() {
-            const { jsPDF } = window.jspdf;
-            const doc = new jsPDF({ orientation: "portrait", unit: "mm", format: "a4" });
-
-            // Judul Dokumen PDF
-            doc.setFontSize(16);
-            doc.setTextColor(31, 41, 55);
-            doc.text("English Verb Dictionary", 14, 15);
-            
-            doc.setFontSize(9);
-            doc.setTextColor(107, 114, 128);
-            doc.text("Daftar Lengkap Kata Kerja English (Regular & Irregular)", 14, 21);
-
-            // Menyiapkan Data Tabel untuk PDF
-            const tableRows = verbsList.map(item => [
-                `${item.v1} (${item.type})`,
-                item.v2,
-                item.v3,
-                item.arti
-            ]);
-
-            // Format Tabel Otomatis Multi-Halaman
-            doc.autoTable({
-                head: [["V1 (Base) & Tipe", "V2 (Past)", "V3 (Participle)", "Arti (Indonesia)"]],
-                body: tableRows,
-                startY: 25,
-                theme: 'striped',
-                headStyles: {
-                    fillColor: [243, 244, 246],
-                    textColor: [75, 85, 99],
-                    fontStyle: 'bold',
-                    fontSize: 9
-                },
-                bodyStyles: {
-                    fontSize: 8.5,
-                    textColor: [51, 65, 85]
-                },
-                columnStyles: {
-                    0: { cellWidth: 45 },
-                    1: { cellWidth: 45 },
-                    2: { cellWidth: 45 },
-                    3: { cellWidth: 'auto' }
-                },
-                margin: { top: 25, bottom: 15, left: 14, right: 14 },
-                didDrawPage: function (data) {
-                    // Header kecil per halaman
-                    doc.setFontSize(8);
-                    doc.setTextColor(156, 163, 175);
-                    doc.text("English Verb Dictionary - MIS Al Inayah", 14, doc.internal.pageSize.height - 8);
-                    
-                    // Nomor halaman
-                    let pageStr = "Halaman " + doc.internal.getNumberOfPages();
-                    doc.text(pageStr, doc.internal.pageSize.width - 25, doc.internal.pageSize.height - 8);
-                }
+            let tableRowsHtml = '';
+            verbsList.forEach((item, index) => {
+                tableRowsHtml += `
+                    <tr>
+                        <td style="padding: 4px 6px; border: 1px solid #94a3b8; font-size: 8pt;">
+                            <b>${item.v1}</b> <span style="font-size: 6.5pt; border: 1px solid #64748b; padding: 1px 3px; border-radius: 3px;">${item.type}</span>
+                        </td>
+                        <td style="padding: 4px 6px; border: 1px solid #94a3b8; font-size: 8pt;">${item.v2}</td>
+                        <td style="padding: 4px 6px; border: 1px solid #94a3b8; font-size: 8pt;">${item.v3}</td>
+                        <td style="padding: 4px 6px; border: 1px solid #94a3b8; font-size: 8pt;">${item.arti}</td>
+                    </tr>
+                `;
             });
 
-            // Simpan Dokumen PDF
-            doc.save("English-Verb-Dictionary.pdf");
+            const htmlContent = `
+                <!DOCTYPE html>
+                <html lang="id">
+                <head>
+                    <meta charset="UTF-8">
+                    <title>Cetak Semua English Verb Dictionary</title>
+                    <style>
+                        @page {
+                            size: A4 portrait;
+                            margin: 10mm;
+                        }
+                        body {
+                            font-family: Arial, sans-serif;
+                            color: #000;
+                            margin: 0;
+                            padding: 0;
+                            -webkit-print-color-adjust: exact;
+                            print-color-adjust: exact;
+                        }
+                        .print-header {
+                            text-align: center;
+                            margin-bottom: 12mm;
+                            border-bottom: 2px solid #0f172a;
+                            padding-bottom: 6px;
+                        }
+                        .print-header h1 {
+                            font-size: 16pt;
+                            margin: 0 0 4px 0;
+                            color: #0f172a;
+                        }
+                        .print-header p {
+                            font-size: 9pt;
+                            margin: 0;
+                            color: #475569;
+                        }
+                        /* Format Kolom Buku: 2 Kolom berdampingan dalam 1 lembar */
+                        .book-layout {
+                            column-count: 2;
+                            column-gap: 8mm;
+                            column-rule: 1px dashed #cbd5e1;
+                            width: 100%;
+                        }
+                        table {
+                            width: 100%;
+                            border-collapse: collapse;
+                            break-inside: avoid;
+                            page-break-inside: avoid;
+                        }
+                        th {
+                            background-color: #f1f5f9 !important;
+                            color: #0f172a;
+                            border: 1px solid #64748b;
+                            padding: 5px 6px;
+                            font-size: 8pt;
+                            text-align: left;
+                        }
+                    </style>
+                </head>
+                <body>
+                    <div class="print-header">
+                        <h1>English Verb Dictionary (Full Collection)</h1>
+                        <p>Kamus Kosakata Kata Kerja Bahasa Inggris Lengkap (V1, V2, V3, & Artinya)</p>
+                    </div>
+                    <div class="book-layout">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>V1 & Tipe</th>
+                                    <th>V2 (Past)</th>
+                                    <th>V3 (Participle)</th>
+                                    <th>Arti</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${tableRowsHtml}
+                            </tbody>
+                        </table>
+                    </div>
+                    <script>
+                        window.onload = function() {
+                            window.print();
+                            window.close();
+                        }
+                    <\/script>
+                </body>
+                </html>
+            `;
+
+            printWindow.document.write(htmlContent);
+            printWindow.document.close();
         }
     </script>
 </body>
