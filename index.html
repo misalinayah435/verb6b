@@ -23,13 +23,56 @@
             }
         }
     </script>
+    
+    <style>
+        /* Gaya Khusus Pencetakan (Print Stylesheet) */
+        @media print {
+            .no-print {
+                display: none !important;
+            }
+            body {
+                background-color: white !important;
+                padding: 0 !important;
+                color: black !important;
+            }
+            .print-container {
+                max-width: 100% !important;
+                margin: 0 !important;
+                padding: 0 !important;
+            }
+            .print-header {
+                margin-bottom: 1.5rem !important;
+                margin-top: 0 !important;
+            }
+            table {
+                width: 100% !important;
+                min-width: 100% !important;
+                border-collapse: collapse !important;
+                font-size: 11pt !important;
+            }
+            th, td {
+                border: 1px solid #e5e7eb !important;
+                padding: 8px 12px !important;
+            }
+            th {
+                background-color: #f9fafb !important;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+            .badge-print {
+                border: 1px solid #ccc !important;
+                background-color: transparent !important;
+                color: #000 !important;
+            }
+        }
+    </style>
 </head>
 <body class="bg-gray-50 text-gray-800 antialiased min-h-screen p-4 sm:p-8">
 
-    <div class="max-w-6xl mx-auto">
+    <div class="max-w-6xl mx-auto print-container">
         <!-- Header Section -->
-        <header class="text-center mb-10 mt-6">
-            <h1 class="text-3xl sm:text-4xl font-semibold text-gray-900 tracking-tight mb-3">
+        <header class="text-center mb-8 mt-4 print-header">
+            <h1 class="text-3xl sm:text-4xl font-semibold text-gray-900 tracking-tight mb-2">
                 English Verb Dictionary
             </h1>
             <p class="text-gray-500 text-sm sm:text-base max-w-2xl mx-auto">
@@ -38,20 +81,34 @@
             </p>
         </header>
 
-        <!-- Search Bar Section -->
-        <div class="relative max-w-3xl mx-auto mb-8 shadow-sm rounded-2xl bg-white">
-            <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                <!-- Search Icon -->
-                <svg class="h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                </svg>
+        <!-- Search Bar & Action Section (No Print) -->
+        <div class="max-w-3xl mx-auto mb-8 flex flex-col sm:flex-row gap-3 no-print">
+            <div class="relative flex-1 shadow-sm rounded-2xl bg-white">
+                <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                    <!-- Search Icon -->
+                    <svg class="h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                    </svg>
+                </div>
+                <input 
+                    type="text" 
+                    id="searchInput" 
+                    class="block w-full pl-12 pr-4 py-3.5 border-0 rounded-2xl text-gray-900 ring-1 ring-inset ring-gray-200 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-blue-600 sm:text-base sm:leading-6 transition-all duration-200 bg-transparent outline-none" 
+                    placeholder="Cari kata (contoh: go, pergi, ate, irregular)..."
+                >
             </div>
-            <input 
-                type="text" 
-                id="searchInput" 
-                class="block w-full pl-12 pr-4 py-4 border-0 rounded-2xl text-gray-900 ring-1 ring-inset ring-gray-200 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-blue-600 sm:text-base sm:leading-6 transition-all duration-200 bg-transparent outline-none" 
-                placeholder="Cari kata (contoh: go, pergi, ate, irregular)..."
+            
+            <!-- Tombol Cetak / Print -->
+            <button 
+                onclick="window.print()" 
+                class="inline-flex items-center justify-center px-5 py-3.5 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-2xl shadow-sm transition-all duration-200 gap-2 shrink-0 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+                title="Cetak atau simpan ke PDF"
             >
+                <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
+                </svg>
+                <span>Cetak / PDF</span>
+            </button>
         </div>
 
         <!-- Table Section -->
@@ -73,7 +130,7 @@
             </div>
             
             <!-- Empty State -->
-            <div id="emptyState" class="hidden py-12 text-center">
+            <div id="emptyState" class="hidden py-12 text-center no-print">
                 <svg class="mx-auto h-12 w-12 text-gray-300 mb-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
@@ -83,7 +140,7 @@
         </div>
 
         <!-- Footer -->
-        <div class="text-center mt-10 mb-8 text-sm text-gray-400">
+        <div class="text-center mt-8 mb-8 text-sm text-gray-400 no-print">
             Total kosakata ditampilkan: <span id="wordCount" class="font-semibold text-blue-600 bg-blue-50 px-2 py-1 rounded-md">0</span>
         </div>
     </div>
@@ -648,7 +705,7 @@
                 row.innerHTML = `
                     <td class="py-4 px-6 text-sm font-medium text-gray-900">
                         ${item.v1} 
-                        <span class="inline-block ml-2 text-[10px] font-semibold px-2 py-0.5 rounded-full border ${badgeClass}">
+                        <span class="inline-block ml-2 text-[10px] font-semibold px-2 py-0.5 rounded-full border badge-print ${badgeClass}">
                             ${item.type}
                         </span>
                     </td>
@@ -672,7 +729,7 @@
                        item.v2.toLowerCase().includes(searchTerm) || 
                        item.v3.toLowerCase().includes(searchTerm) || 
                        item.arti.toLowerCase().includes(searchTerm) ||
-                       item.type.toLowerCase().includes(searchTerm); // Fitur cari berdasarkan tipe
+                       item.type.toLowerCase().includes(searchTerm);
             });
 
             renderTable(filteredData);
