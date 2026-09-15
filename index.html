@@ -31,13 +31,6 @@
         }
 
         @media print {
-            @page {
-                size: A4 portrait;
-                margin: 8mm;
-            }
-            .no-print {
-                display: none !important;
-            }
             body {
                 background-color: white !important;
                 padding: 0 !important;
@@ -45,6 +38,9 @@
                 color: black !important;
                 -webkit-print-color-adjust: exact;
                 print-color-adjust: exact;
+            }
+            .no-print {
+                display: none !important;
             }
         }
     </style>
@@ -63,9 +59,9 @@
             </p>
         </header>
 
-        <!-- Search Bar & Print All Button Section -->
-        <div class="max-w-3xl mx-auto mb-8 flex flex-col sm:flex-row gap-3 no-print">
-            <div class="relative flex-1 shadow-sm rounded-2xl bg-white">
+        <!-- Search Bar, Paper Size Selector & Print Button Section -->
+        <div class="max-w-4xl mx-auto mb-8 flex flex-col sm:flex-row gap-3 no-print items-center">
+            <div class="relative flex-1 shadow-sm rounded-2xl bg-white w-full">
                 <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
                     <svg class="h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
@@ -79,15 +75,24 @@
                 >
             </div>
 
+            <!-- Pilihan Ukuran Kertas -->
+            <div class="flex items-center gap-2 bg-white px-4 py-3 rounded-2xl ring-1 ring-inset ring-gray-200 shadow-sm shrink-0">
+                <label for="paperSize" class="text-sm font-medium text-gray-700">Ukuran:</label>
+                <select id="paperSize" class="bg-transparent text-sm font-semibold text-blue-600 outline-none cursor-pointer">
+                    <option value="A4">A4 (210 x 297 mm)</option>
+                    <option value="F4">F4 / Legal (215 x 330 mm)</option>
+                </select>
+            </div>
+
             <!-- Tombol Cetak Semua / PDF Format Buku -->
             <button 
                 onclick="printAllVerbs()" 
-                class="bg-blue-600 hover:bg-blue-700 text-white font-medium px-6 py-4 rounded-2xl shadow-sm transition-all duration-200 flex items-center justify-center gap-2 shrink-0 cursor-pointer"
+                class="bg-blue-600 hover:bg-blue-700 text-white font-medium px-6 py-4 rounded-2xl shadow-sm transition-all duration-200 flex items-center justify-center gap-2 shrink-0 cursor-pointer w-full sm:w-auto"
             >
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/>
                 </svg>
-                <span>Cetak Semua Verb (Format Buku)</span>
+                <span>Cetak Semua Verb</span>
             </button>
         </div>
 
@@ -649,6 +654,7 @@
         const searchInput = document.getElementById("searchInput");
         const emptyState = document.getElementById("emptyState");
         const wordCount = document.getElementById("wordCount");
+        const paperSizeSelect = document.getElementById("paperSize");
 
         function getBadgeColor(type) {
             if (type === "Regular") {
@@ -702,13 +708,13 @@
             renderTable(filteredData);
         });
 
-        // Fungsi Cetak Layout Buku (Label Tipe diubah menjadi simbol R / I)
+        // Fungsi Cetak dengan Pemilihan Ukuran Kertas (A4 atau F4/Legal)
         function printAllVerbs() {
+            const selectedSize = paperSizeSelect.value; // "A4" atau "F4"
             const printWindow = window.open('', '_blank');
             
             let tableRowsHtml = '';
             verbsList.forEach((item) => {
-                // Simbol R untuk Regular, I untuk Irregular
                 const typeSymbol = item.type === "Regular" ? "R" : "I";
                 const symbolStyle = item.type === "Regular" 
                     ? "background: #f1f5f9; color: #0369a1; border: 1px solid #bae6fd;" 
@@ -726,15 +732,19 @@
                 `;
             });
 
+            // Pengaturan ukuran halaman CSS (@page) berdasarkan pilihan
+            // A4 = 210mm x 297mm, F4 / Legal = 215.9mm x 330mm
+            const pageSizeCss = selectedSize === 'F4' ? '215.9mm 330mm' : 'A4 portrait';
+
             const htmlContent = `
                 <!DOCTYPE html>
                 <html lang="id">
                 <head>
                     <meta charset="UTF-8">
-                    <title>English Verb Dictionary - Book Print</title>
+                    <title>English Verb Dictionary - Book Print (${selectedSize})</title>
                     <style>
                         @page {
-                            size: A4 portrait;
+                            size: ${pageSizeCss};
                             margin: 8mm;
                         }
                         body {
@@ -761,7 +771,7 @@
                             margin: 0;
                             color: #475569;
                         }
-                        /* Format Kolom Buku Sempurna */
+                        /* Format Kolom Buku 2 Sisi */
                         .book-layout {
                             column-count: 2;
                             column-gap: 6mm;
@@ -791,7 +801,7 @@
                 </head>
                 <body>
                     <div class="print-header">
-                        <h1>English Verb Dictionary (Compact Book Edition)</h1>
+                        <h1>English Verb Dictionary (Compact Book Edition - ${selectedSize})</h1>
                         <p>Keterangan Tipe: [R] Regular Verb | [I] Irregular Verb</p>
                     </div>
                     <div class="book-layout">
